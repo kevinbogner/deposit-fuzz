@@ -9,11 +9,10 @@ use std::time::Duration;
 
 use crate::env_vars::Environment;
 
-pub fn execute_deposits(env: &Environment) -> anyhow::Result<()> {
-    // Open the file
-    let lines = read_lines(&env.deposit_datas_file_location).context(format!(
+pub fn execute_deposits(env: &Environment, deposit_data_file: &str) -> anyhow::Result<()> {
+    let lines = read_lines(deposit_data_file).context(format!(
         "Failed to read lines from file {}",
-        env.deposit_datas_file_location
+        deposit_data_file
     ))?;
 
     // Iterate over lines in the file
@@ -36,6 +35,8 @@ pub fn execute_deposits(env: &Environment) -> anyhow::Result<()> {
                     .arg("beacon")
                     .arg("deposit")
                     .arg("--allow-unknown-contract")
+                    .arg("--allow-new-data")
+                    .arg("--allow-excessive-deposit")
                     .arg("--address")
                     .arg(&env.deposit_contract_address)
                     .arg("--connection")
@@ -66,7 +67,6 @@ pub fn execute_deposits(env: &Environment) -> anyhow::Result<()> {
     Ok(())
 }
 
-// Read lines of a file
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path>,
