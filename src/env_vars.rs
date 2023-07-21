@@ -1,21 +1,24 @@
 use anyhow::{Context, Result};
 use std::env;
 
-pub fn load_environment_variables() -> Result<(
-    i32,    // ACC_START_INDEX
-    i32,    // ACC_END_INDEX
-    i64,    // DEPOSIT_AMOUNT
-    String, // FORK_VERSION
-    String, // DEPOSIT_CONTRACT_ADDRESS
-    String, // WITHDRAWALS_MNEMONIC
-    String, // VALIDATORS_MNEMONIC
-    String, // DEPOSIT_DATAS_FILE_LOCATION
-    String, // ETHEREAL_PATH
-    String, // ETH2_VAL_TOOLS_PATH
-    String, // ETH1_FROM_ADDR
-    String, // ETH1_FROM_PRIV
-    String, // ETH1_NETWORK
-)> {
+pub struct Environment {
+    pub acc_start_index: i32,
+    pub acc_end_index: i32,
+    pub deposit_amount: i64,
+    pub fork_version: String,
+    pub deposit_contract_address: String,
+    pub withdrawals_mnemonic: String,
+    pub validators_mnemonic: String,
+    pub deposit_datas_file_location: String,
+    pub ethereal_path: String,
+    pub eth2_val_tools_path: String,
+    pub eth1_from_addr: String,
+    pub eth1_from_priv: String,
+    pub eth1_network: String,
+    pub deposit_delay_ms: u64,
+}
+
+pub fn load_environment_variables() -> Result<Environment> {
     dotenv::from_filename("secrets.env").ok();
 
     // Account indexes
@@ -51,8 +54,11 @@ pub fn load_environment_variables() -> Result<(
     let eth1_from_addr: String = env::var("ETH1_FROM_ADDR").context("ETH1_FROM_ADDR not found")?;
     let eth1_from_priv: String = env::var("ETH1_FROM_PRIV").context("ETH1_FROM_PRIV not found")?;
     let eth1_network: String = env::var("ETH1_NETWORK").unwrap_or_default();
+    let deposit_delay_ms: u64 = env::var("DEPOSIT_DELAY_MS")
+        .context("DEPOSIT_DELAY_MS not found")?
+        .parse()?;
 
-    Ok((
+    Ok(Environment {
         acc_start_index,
         acc_end_index,
         deposit_amount,
@@ -66,5 +72,6 @@ pub fn load_environment_variables() -> Result<(
         eth1_from_addr,
         eth1_from_priv,
         eth1_network,
-    ))
+        deposit_delay_ms,
+    })
 }

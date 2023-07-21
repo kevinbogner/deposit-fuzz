@@ -4,20 +4,16 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::Command;
+use std::thread;
+use std::time::Duration;
 
-pub fn execute_deposits(
-    deposit_contract_address: String,
-    eth1_from_addr: String,
-    eth1_from_priv: String,
-    eth1_network: String,
-    deposit_amount: String,
-    deposit_datas_file_location: String,
-    ethereal_path: String,
-) -> anyhow::Result<()> {
+use crate::env_vars::Environment;
+
+pub fn execute_deposits(env: &Environment) -> anyhow::Result<()> {
     // Open the file
-    let lines = read_lines(&deposit_datas_file_location).context(format!(
+    let lines = read_lines(&env.deposit_datas_file_location).context(format!(
         "Failed to read lines from file {}",
-        deposit_datas_file_location
+        env.deposit_datas_file_location
     ))?;
 
     // Iterate over lines in the file
@@ -36,22 +32,22 @@ pub fn execute_deposits(
                 println!("Sending deposit for validator {} {}", account_name, pubkey);
 
                 // Execute command
-                let output = Command::new(&ethereal_path)
+                let output = Command::new(&env.ethereal_path)
                     .arg("beacon")
                     .arg("deposit")
                     .arg("--allow-unknown-contract")
                     .arg("--address")
-                    .arg(&deposit_contract_address)
+                    .arg(&env.deposit_contract_address)
                     .arg("--connection")
-                    .arg(&eth1_network)
+                    .arg(&env.eth1_network)
                     .arg("--data")
                     .arg(&ip)
                     .arg("--value")
-                    .arg(&deposit_amount)
+                    .arg(&env.deposit_amount.to_string())
                     .arg("--from")
-                    .arg(&eth1_from_addr)
+                    .arg(&env.eth1_from_addr)
                     .arg("--privatekey")
-                    .arg(&eth1_from_priv)
+                    .arg(&env.eth1_from_priv)
                     .output()
                     .context("Failed to execute command")?;
 
@@ -60,6 +56,8 @@ pub fn execute_deposits(
                 }
 
                 println!("Sent deposit for validator {} {}", account_name, pubkey);
+
+                thread::sleep(Duration::from_millis(env.deposit_delay_ms));
             }
             Err(err) => return Err(anyhow::anyhow!(err)),
         }
