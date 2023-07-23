@@ -36,6 +36,7 @@ pub fn execute_deposits(env: &Environment, deposit_data_file: &str) -> anyhow::R
                     .arg("deposit")
                     .arg("--allow-unknown-contract")
                     .arg("--allow-new-data")
+                    .arg("--allow-old-data")
                     .arg("--allow-excessive-deposit")
                     .arg("--address")
                     .arg(&env.deposit_contract_address)
