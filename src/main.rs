@@ -3,7 +3,7 @@ mod env_vars;
 mod exec_deposits;
 mod randomizer;
 
-fn main() -> anyhow::Result<()> {
+fn main() -> color_eyre::Result<()> {
     match env_vars::load_environment_variables() {
         Ok(env) => {
             build_deposits::build_deposits(&env)?;
@@ -11,10 +11,10 @@ fn main() -> anyhow::Result<()> {
             exec_deposits::execute_deposits(&env, "randomized_deposit_data.txt")?;
         }
         Err(e) => {
-            return Err(anyhow::anyhow!(
-                "Error loading environment variables: {:?}",
+            return Err(color_eyre::Report::msg(format!(
+                "Failed to load environment variables: {}",
                 e
-            ));
+            )))
         }
     }
     Ok(())
