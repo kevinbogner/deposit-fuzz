@@ -8,7 +8,7 @@ use std::io::{BufRead, BufReader, Write};
 
 use crate::env_vars::Environment;
 
-pub fn randomize_deposit_data(env: &Environment) -> anyhow::Result<()> {
+pub fn randomize_deposit_data(env: &Environment) -> color_eyre::Result<()> {
     let input = File::open(&env.deposit_datas_file_location)?;
     let reader = BufReader::new(input);
 

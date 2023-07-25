@@ -2,7 +2,7 @@ use std::process::Command;
 
 use crate::env_vars::Environment;
 
-pub fn build_deposits(env: &Environment) -> anyhow::Result<()> {
+pub fn build_deposits(env: &Environment) -> color_eyre::Result<()> {
     let output = Command::new(&env.eth2_val_tools_path)
         .arg("deposit-data")
         .arg("--source-min")
