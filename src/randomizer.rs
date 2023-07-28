@@ -83,7 +83,6 @@ mod tests {
     use super::*;
     use std::fs::File;
     use std::io::Write;
-    use std::path::Path;
 
     #[test]
     fn test_randomize_deposit_data() -> color_eyre::Result<()> {
