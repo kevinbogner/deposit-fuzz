@@ -19,6 +19,18 @@ cargo build --release
 ./target/release/deposit-fuzz
 ```
 
+You can use the `-r` or `--randomize` flag to randomize the deposit data:
+
+```bash
+./target/release/deposit-fuzz -r
+```
+
+or
+
+```bash
+./target/release/deposit-fuzz --randomize
+```
+
 ## License
 
 Deposit-Fuzz is released under the [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.en.html).

@@ -3,16 +3,14 @@ use ethereum_types::H512 as EthH512;
 use hex::encode as hex_encode;
 use rand::Rng;
 use serde_json::Value;
-use std::fs::File;
+use std::fs::{self, File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 
-use crate::env_vars::Environment;
-
-pub fn randomize_deposit_data(env: &Environment) -> color_eyre::Result<()> {
-    let input = File::open(&env.deposit_datas_file_location)?;
+pub fn randomize_deposit_data(file_name: &str) -> color_eyre::Result<String> {
+    let input = File::open(file_name)?;
     let reader = BufReader::new(input);
 
-    let mut output = File::create("randomized_deposit_data.txt")?;
+    let mut randomized_data: Vec<String> = vec![];
 
     let mut rng = rand::thread_rng();
 
@@ -66,8 +64,16 @@ pub fn randomize_deposit_data(env: &Environment) -> color_eyre::Result<()> {
 
         let line = serde_json::to_string(&data)?;
 
-        writeln!(output, "{}", line)?;
+        randomized_data.push(line);
     }
 
-    Ok(())
+    fs::write(file_name, "")?;
+
+    let mut file = OpenOptions::new().append(true).open(file_name)?;
+
+    for line in randomized_data {
+        writeln!(file, "{}", line)?;
+    }
+
+    Ok(file_name.to_string())
 }
