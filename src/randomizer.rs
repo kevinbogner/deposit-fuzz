@@ -77,3 +77,29 @@ pub fn randomize_deposit_data(file_name: &str) -> color_eyre::Result<String> {
 
     Ok(file_name.to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::Write;
+
+    #[test]
+    fn test_randomize_deposit_data() -> color_eyre::Result<()> {
+        let file_name = "test_deposit_data.txt";
+        let initial_data = r#"{"account":"m/12381/3600/0/0/0","pubkey":"0x...","value":32000000000,"withdrawal_credentials":"0x...","signature":"0x..."}"#;
+
+        let mut file = File::create(file_name)?;
+        writeln!(file, "{}", initial_data)?;
+
+        let result = randomize_deposit_data(file_name);
+        assert!(result.is_ok());
+
+        let contents = std::fs::read_to_string(file_name)?;
+        assert_ne!(contents.trim(), initial_data);
+
+        std::fs::remove_file(file_name)?;
+
+        Ok(())
+    }
+}
