@@ -8,7 +8,13 @@ fn main() -> color_eyre::Result<()> {
     let args = cmd_args::CmdArgs::new();
 
     match env_vars::load_environment_variables() {
-        Ok(env) => {
+        Ok(mut env) => {
+            if let Some(rpc_url) = args.rpc {
+                if !rpc_url.is_empty() {
+                    env.eth1_network = rpc_url;
+                }
+            }
+
             build_deposits::build_deposits(&env)?;
             if args.randomize {
                 randomizer::randomize_deposit_data(&env.deposit_datas_file_location)?;
