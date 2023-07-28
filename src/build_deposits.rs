@@ -20,7 +20,7 @@ pub fn build_deposits(env: &Environment) -> color_eyre::Result<()> {
         .output()?;
 
     // Write output to a temporary file
-    std::fs::write("temp_deposit_data.txt", output.stdout)?;
+    std::fs::write("deposit_data.txt", output.stdout)?;
 
     if !output.status.success() {
         Err(Box::new(std::io::Error::new(

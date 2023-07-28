@@ -53,7 +53,7 @@ pub fn load_environment_variables() -> Result<Environment> {
     // Ethereum network details
     let eth1_from_addr: String = env::var("ETH1_FROM_ADDR").context("ETH1_FROM_ADDR not found")?;
     let eth1_from_priv: String = env::var("ETH1_FROM_PRIV").context("ETH1_FROM_PRIV not found")?;
-    let eth1_network: String = env::var("ETH1_NETWORK").unwrap_or_default();
+    let eth1_network: String = env::var("ETH1_NETWORK").context("ETH1_NETWORK not found")?;
     let deposit_delay_ms: u64 = env::var("DEPOSIT_DELAY_MS")
         .context("DEPOSIT_DELAY_MS not found")?
         .parse()?;
